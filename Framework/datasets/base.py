@@ -27,14 +27,7 @@ class MNIST(data_base):
         Args:
             path: path of dataset directory
         '''
-        super().__init__()
-        
-        self.t_data, self.t_len, self.h , self.w    = self._image_parser(path,TRAIN_DATA)
-        self.v_data, self.v_len, self.v_h, self.v_w = self._image_parser(path,VALID_DATA)
-        
-        self.t_label, self.t_l_len = self._label_parser(path,TRAIN_LABEL)
-        self.v_label, self.v_l_len = self._label_parser(path,VALID_LABEL)
-        
+        super().__init__()        
         if typer=="train":
             self.data_name=TRAIN_DATA
             self.label_name=TRAIN_LABEL
@@ -49,7 +42,7 @@ class MNIST(data_base):
         assert(self.length==self.l_length)
 
     def _get_image(self,buff,index:int,row:int,col:int):
-        ''' get image from bit string
+        ''' get image from bit string 
         Args:
             buff: cached bit string 
             index: denote where image start
@@ -61,15 +54,18 @@ class MNIST(data_base):
             index: int 
         '''
         bits='>'+'B'*(row*col)
+        
+        i=struct.unpack_from(bits,buff,index)
         length=struct.calcsize(bits)
         index=index+length
-        i=struct.unpack_from(bits,buff,index)
+        
         img=np.array(i,dtype=np.uint8)
         img.resize((row,col))
+        
         return (img,index)
     
     def _image_parser(self,path:str,file:str):
-        ''' get all images from data file
+        ''' get all images from data file 
         Args:
             path: dataset directory
             file: datafile name
@@ -85,7 +81,6 @@ class MNIST(data_base):
             cache=f.read()
         _,images,rows,columns=struct.unpack_from('>IIII',cache,index)
         index+=struct.calcsize('>IIII')
-        
         image_set=[]
         for i in range(images):
             img,index=self._get_image(cache,index,rows,columns)
@@ -108,7 +103,7 @@ class MNIST(data_base):
         
         label_set=[]
         for i in range(labels):
-            l=int( struct.unpack_from('>B',cache,index) )
+            l=int(struct.unpack_from('>B',cache,index)[0])
             index+=struct.calcsize('>B')
             label_set.append(l)
         return label_set,labels
