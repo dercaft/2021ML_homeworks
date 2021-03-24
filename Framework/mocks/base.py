@@ -104,7 +104,7 @@ class Single_sin_mock(Single_base_mock):
         super().__init__(ranger=x_ranger, number=number, noise_generator=noise_generator, func=self.func, args=args, kwargs=kwargs)
 
         self.y=self.y*self.scale+self.mean
-        self.data=np.array(object=[self.y,self.x]).T
+        self.data=np.vstack((self.y,self.x)).T
     
 if __name__=="__main__":
     # noiser=Gauss_noise((2,2),(-1,4))
